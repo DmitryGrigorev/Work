@@ -56,7 +56,7 @@ typedef struct __attribute__((packed)) {
 
 struct __attribute((packed)) NewRecord {
   Byte svar_flag;       //байт флагов режима сварки
-  Word tok_s;           //ток зажигания
+  Byte tok_s;           //ток зажигания
   Word tok_i;           //ток импульса
   Word tok_p;           //ток паузы
   Byte produv;          //длительность продува

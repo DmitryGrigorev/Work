@@ -56,12 +56,17 @@ GRF_Reader::GRF_Reader(QString &file_name) {
  * \brief GRF_Reader::~GRF_Reader Деструктор класса. Очищает все поля класса.
  */
 GRF_Reader::~GRF_Reader() {
+  /* Сбрасываю поток ввода/вывода в буфер */
   this->stream->unsetDevice();
   this->stream->resetStatus();
+  /* Удаляю указатель на объект потока */
   delete this->stream;
+  /* Очищаю буфер файла */
   this->memfile->clear();
+  /* Удаляю указатель на буфер */
   delete this->memfile;
 
+  /* Очищаю и удаляю массивы записей, загруженные в память */
   for (int i = 0; i < record_count; i++) {
     if (records_type == RECTYPE) {
       this->recs[i].currency_array->clear();
@@ -91,10 +96,10 @@ GRF_Reader::~GRF_Reader() {
 }
 
 /**
- * @brief GRF_Reader::SetParentWidgetPointer    Установить указатель на объект
- * родительского окна
- * @param w Указатель
- */
+* @brief GRF_Reader::SetParentWidgetPointer    Установить указатель на объект
+* родительского окна
+* @param w Указатель
+*/
 void GRF_Reader::SetParentWidgetPointer(void *w) { this->parent_wdg_ptr = w; }
 
 #include "mainwindow.h"
@@ -115,12 +120,11 @@ void GRF_Reader::BeginReading(void *w) {
   if (records_type == RECTYPE_OLD)
     this->oldrecs = new st_record<OldRecord>[record_count];
   /*
- * Цикл считывания записей в массив.
- * По типу записи определяем что и куда надо считывать.
- * После чтения одной записи, выделяю место под массив сорости и тока.
- * Затем считываю массивы.
- */
-
+   * Цикл считывания записей в массив.
+   * По типу записи определяем что и куда надо считывать.
+   * После чтения одной записи, выделяю место под массив сорости и тока.
+   * Затем считываю массивы.
+   */
   for (int i = 0; i < record_count; i++) {
     if (records_type == RECTYPE) {
       ReadRecord(&recs[i]);
