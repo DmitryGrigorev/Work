@@ -4,10 +4,13 @@
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
+#include <QLibrary>
 #include <QTextCodec>
 #include <ui_mainwindow.h>
 
 QList<QAction *> *action_list;
+typedef char *(*conv_func_proto)(double);
+conv_func_proto tdconvert;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -28,6 +31,13 @@ MainWindow::MainWindow(QWidget *parent)
   ui->menu->insertActions(ui->actionExit, *action_list);
   ui->menu->insertSeparator(
       ui->menu->actions().at(ui->menu->actions().count() - 1));
+
+  QLibrary tdlib("libtdconv");
+  if (tdlib.load()) {
+    tdconvert = (conv_func_proto)tdlib.resolve("ParseTDateTime");
+  } else {
+    qDebug() << "libtdconv: not loaded!";
+  }
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -150,6 +160,9 @@ void MainWindow::SetTable(Record *record) {
 
 int l = 0;
 void MainWindow::SetTable(NewRecord *record) {
+  char *p = new char[80];
+  if (tdconvert)
+    p = tdconvert(record->data_);
   QTableWidgetItem *name = new QTableWidgetItem(codec->toUnicode(record->name)),
                    *date = new QTableWidgetItem(record->data_),
                    *time = new QTableWidgetItem(record->time_),

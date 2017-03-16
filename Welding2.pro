@@ -43,3 +43,5 @@ RESOURCES += \
 INCLUDEPATH += $$PWD/.
 DEPENDPATH += $$PWD/.
 
+DISTFILES += \
+    libtdconv.so
